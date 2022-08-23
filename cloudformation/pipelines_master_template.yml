@@ -1,0 +1,192 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Description: >
+  Version 1.0 CI/CD pipelines master template
+
+  Creates a CI/CD pipeline for all applications.
+
+Parameters:
+  S3Bucket:
+    Type: String
+    Default: sws-infrastructure-dev
+    Description: S3 bucket holding the CI/CD pipeline template.
+  S3Region:
+    Type: String
+    Description: Region for S3 bucket holding the CI/CD pipeline template.
+    Default: eu-west-1
+  UseManualApproval:
+    Type: String
+    Default: false
+    AllowedValues:
+      - true
+      - false
+  ElasticSearchSize:
+    Type: String
+    AllowedValues:
+      - small
+      - large
+
+Resources:
+  DeployStackRoleParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: Role for stack deployment
+      Name: /Deployment/DeployStackRoleArn
+      Type: String
+      Value: !GetAtt DeployStackRole.Arn
+
+  SwsSearchApiClientPipeline:
+    Type: AWS::CloudFormation::Stack
+    DependsOn:
+      - DeployStackRoleParameter
+    Properties:
+      Parameters:
+        DeployParameterOverrides: !Sub '{"CustomDomainBasePath": "search", "ElasticSearchSize":"${ElasticSearchSize}"}'
+        GitHubRepo: search-workspace-service
+        GitHubBranch: main
+        UseManualApproval: !Ref UseManualApproval
+        RequiresDocker: true
+      TemplateURL: !Sub 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/continuous_build_pipeline.yml'
+      TimeoutInMinutes: 60
+
+
+  # This is used in the continuous-build-pipeline, and it is defined here and not in the
+  # continuous-build-pipeline in the case we want to delete the service stack (e.g. publication service)
+  # after we have deleted the pipeline stack.
+  DeployStackRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: Role to allow Cloudformation to deploy stack
+      RoleName: !Sub 'DeployStacksRole-${AWS::Region}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: [ cloudformation.amazonaws.com ]
+      Path: /
+      Policies:
+        - PolicyName: DeployLambdaPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                Effect: Allow
+                Resource:
+                  - "*"
+              - Action:
+                  - application-autoscaling:DescribeScheduledActions
+                  - application-autoscaling:DescribeScalableTargets
+                  - application-autoscaling:RegisterScalableTarget
+                  - application-autoscaling:DeregisterScalableTarget
+                  - application-autoscaling:DescribeScalingPolicies
+                  - application-autoscaling:DescribeScalingPolicies
+                  - application-autoscaling:PutScalingPolicy
+                  - application-autoscaling:DeleteScalingPolicy
+                  - autoscaling:DeleteScalingPolicy
+                  - cloudwatch:PutMetricAlarm
+                  - cloudwatch:DeleteAlarms
+                  - cloudwatch:DescribeAlarms
+                  - cloudformation:CreateChangeSet
+                  - cloudfront:UpdateDistribution
+                  - codedeploy:CreateApplication
+                  - codedeploy:DeleteApplication
+                  - codedeploy:CreateDeploymentGroup
+                  - codedeploy:UpdateDeploymentGroup
+                  - codedeploy:DeleteDeploymentGroup
+                  - codedeploy:GetDeploymentConfig
+                  - codedeploy:RegisterApplicationRevision
+                  - codedeploy:CreateDeployment
+                  - codedeploy:GetDeployment
+                  - cognito-idp:*
+                  - cognito-identity:*
+                  - iam:AttachRolePolicy
+                  - iam:GetRole
+                  - iam:CreateRole
+                  - iam:PassRole
+                  - iam:DeleteRole
+                  - iam:DetachRolePolicy
+                  - iam:PutRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:GetRolePolicy
+                  - iam:UpdateAssumeRolePolicy
+                  - iam:CreateServiceLinkedRole
+                  - dynamodb:DescribeTable
+                  - dynamodb:CreateTable
+                  - dynamodb:UpdateTable
+                  - dynamodb:DescribeContinuousBackups
+                  - dynamodb:UpdateContinuousBackups
+                  - dynamodb:DeleteTable
+                  - events:PutRule
+                  - lambda:*
+                  - logs:CreateLogGroup
+                  - logs:DeleteLogGroup
+                  - logs:DescribeLogGroups
+                  - apigateway:GET
+                  - apigateway:PUT
+                  - apigateway:POST
+                  - apigateway:DELETE
+                  - apigateway:PATCH
+                  - apigateway:UpdateRestApiPolicy
+                  - ec2:DescribeSubnets
+                  - ec2:DescribeSecurityGroups
+                  - ec2:DescribeVpcs
+                  - es:CreateElasticsearchDomain
+                  - es:DeleteElasticsearchDomain
+                  - es:DescribeElasticsearchDomain
+                  - es:UpdateElasticsearchDomainConfig
+                  - s3:CreateBucket
+                  - s3:PutLifecycleConfiguration
+                  - s3:DeleteBucket
+                  - s3:PutBucketVersioning
+                  - s3:PutBucketCORS
+                  - s3:PutBucketPolicy
+                  - s3:DeleteBucketPolicy
+                  - s3:PutBucketNotification
+                  - ses:CreateEmailIdentity
+                  - ses:PutEmailIdentityDkimAttributes
+                  - ses:DeleteEmailIdentity
+                  - ses:PutEmailIdentityFeedbackAttributes
+                  - ses:GetEmailIdentity
+                  - sqs:CreateQueue
+                  - sqs:GetQueueAttributes
+                  - sqs:DeleteQueue
+                  - events:DeleteRule
+                  - events:DescribeRule
+                  - events:ListRules
+                  - events:PutRule
+                  - events:PutTargets
+                  - events:RemoveTargets
+                  - events:CreateEventBus
+                  - events:DeleteEventBus
+                  - events:DescribeEventBus
+                  - sqs:CreateQueue
+                  - sqs:GetQueueAttributes
+                  - sqs:DeleteQueue
+                  - ssm:PutParameter
+                  - ssm:GetParameter
+                  - ssm:DeleteParameter
+                  - ssm:AddTagsToResource
+                  - secretsmanager:DeleteSecret
+                  - secretsmanager:GetRandomPassword
+                  - secretsmanager:CreateSecret
+                  - secretsmanager:TagResource
+                  - secretsmanager:GetSecretValue
+                Effect: Allow
+                Resource: "*"
+              - Action:
+                  - ssm:GetSecretValue
+                  - ssm:GetParameters
+                Effect: Allow
+                Resource: '*'
+              - Action:
+                  - secretsmanager:GetSecretValue
+                Effect: Allow
+                Resource: '*'
+
+
