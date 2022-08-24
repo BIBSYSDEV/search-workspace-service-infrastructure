@@ -28,18 +28,18 @@ Parameters:
       - large
 
 Resources:
-  DeployStackRoleParameter:
+  SwsDeployStackRoleParameter:
     Type: AWS::SSM::Parameter
     Properties:
       Description: Role for stack deployment
-      Name: /Deployment/DeployStackRoleArn
+      Name: /Deployment/SwsDeployStackRoleArn
       Type: String
-      Value: !GetAtt DeployStackRole.Arn
+      Value: !GetAtt SwsDeployStackRole.Arn
 
   SwsSearchApiClientPipeline:
     Type: AWS::CloudFormation::Stack
     DependsOn:
-      - DeployStackRoleParameter
+      - SwsDeployStackRoleParameter
     Properties:
       Parameters:
         DeployParameterOverrides: !Sub '{"CustomDomainBasePath": "search", "ElasticSearchSize":"${ElasticSearchSize}"}'
@@ -54,11 +54,11 @@ Resources:
   # This is used in the continuous-build-pipeline, and it is defined here and not in the
   # continuous-build-pipeline in the case we want to delete the service stack (e.g. publication service)
   # after we have deleted the pipeline stack.
-  DeployStackRole:
+  SwsDeployStackRole:
     Type: AWS::IAM::Role
     Properties:
       Description: Role to allow Cloudformation to deploy stack
-      RoleName: !Sub 'DeployStacksRole-${AWS::Region}'
+      RoleName: !Sub 'SwsDeployStackRole-${AWS::Region}'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
