@@ -58,7 +58,7 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       Description: Role to allow Cloudformation to deploy stack
-      RoleName: !Sub 'SwsDeployStackRole-${AWS::Region}'
+      RoleName: !Sub 'SwsDeployStacksRole-${AWS::Region}'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:

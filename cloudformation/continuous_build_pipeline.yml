@@ -42,10 +42,10 @@ Parameters:
   CodeBuildImage:
     Type: String
     Default: aws/codebuild/standard:5.0
-  DeployStackRoleArn:
+  SwsDeployStackRoleArn:
     Type: AWS::SSM::Parameter::Value<String>
     Description: The Role ARN for deploying the stack
-    Default: /Deployment/DeployStackRoleArn
+    Default: /Deployment/SwsDeployStackRoleArn
   RequiresDocker:
     Description: Boolean value if build requires Docker
     Type: String
@@ -141,7 +141,7 @@ Resources:
                 - Name: !Sub '${GitHubRepo}-Build'
               Configuration:
                 ActionMode: REPLACE_ON_FAILURE
-                RoleArn: !Ref  DeployStackRoleArn
+                RoleArn: !Ref SwsDeployStackRoleArn
                 StackName: !Sub '${AWS::StackName}-${GitHubRepo}'
                 TemplatePath: !Sub '${GitHubRepo}-Build::packaged.yaml'
                 Capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND
@@ -169,7 +169,7 @@ Resources:
               - Action:
                   - iam:PassRole
                 Effect: Allow
-                Resource: !Ref DeployStackRoleArn
+                Resource: !Ref SwsDeployStackRoleArn
               - Action:
                   - s3:ListBucket
                   - s3:GetBucketVersioning
