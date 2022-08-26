@@ -36,7 +36,7 @@ Resources:
       Type: String
       Value: !GetAtt SwsDeployStackRole.Arn
 
-  SwsSearchApiClientPipeline:
+  SwsPipeline:
     Type: AWS::CloudFormation::Stack
     DependsOn:
       - SwsDeployStackRoleParameter
