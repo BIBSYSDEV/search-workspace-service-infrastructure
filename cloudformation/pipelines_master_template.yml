@@ -42,7 +42,7 @@ Resources:
       - SwsDeployStackRoleParameter
     Properties:
       Parameters:
-        DeployParameterOverrides: !Sub '{"CustomDomainBasePath": "search", "ElasticSearchSize":"${ElasticSearchSize}"}'
+        DeployParameterOverrides: !Sub '{"ElasticSearchSize":"${ElasticSearchSize}"}'
         GitHubRepo: search-workspace-service
         GitHubBranch: main
         UseManualApproval: !Ref UseManualApproval
