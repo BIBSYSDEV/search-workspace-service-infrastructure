@@ -23,11 +23,49 @@ Parameters:
       - false
   ElasticSearchSize:
     Type: String
+    Default: small
     AllowedValues:
       - small
       - large
+  UserPoolDomainPrefix:
+    Type: String
+    Description: The prefix for the Cognito domain. Must be globaly unique
+    Default: sws-auth-dev
+  ApiDomain:
+    Type: String
+    Description: The domain of the SWS Backend related services. This part of the domain is common to both backend and frontend services. Eg. api.dev.sws.aws.sikt.no or api.sws.aws.sikt.no.
+    Default: api.dev.sws.aws.sikt.no
+    AllowedValues:
+      - api.dev.sws.aws.sikt.no
+      - api.sandbox.sws.aws.sikt.no
+      - api.sws.aws.sikt.no
+  CustomDomain:
+    Type: String
+    Description: The domain of the SWS related services. Domain for the enviorment without service related prefix (api). Eg. dev.sws.aws.sikt.no or sws.aws.sikt.no.
+    Default: dev.sws.aws.sikt.no
+    AllowedValues:
+      - dev.sws.aws.sikt.no
+      - sandbox.sws.aws.sikt.no
+      - sws.aws.sikt.no
+  CertificateArn:
+    Type: String
+    Description: ARN for the certificate covering the API host/domain/API Gateway Custom Domain. The value is stored in Region us-east-1.
 
 Resources:
+  ApiDomainNameParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: Hostname for API Gateway Custom Domain
+      Name: /SWS/ApiDomain
+      Type: String
+      Value: !Ref ApiDomain
+  CustomDomainNameParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: The custom domain for the enviorment without service related prefix.
+      Name: /SWS/CustomDomain
+      Type: String
+      Value: !Ref CustomDomain
   SwsDeployStackRoleParameter:
     Type: AWS::SSM::Parameter
     Properties:
@@ -40,9 +78,16 @@ Resources:
     Type: AWS::CloudFormation::Stack
     DependsOn:
       - SwsDeployStackRoleParameter
+      - ApiDomainNameParameter
+      - CustomDomainNameParameter
     Properties:
       Parameters:
-        DeployParameterOverrides: !Sub '{"ElasticSearchSize":"${ElasticSearchSize}"}'
+        DeployParameterOverrides: !Sub '
+        {
+          "CustomDomain":"${CustomDomain}",
+          "ElasticSearchSize":"${ElasticSearchSize}", 
+          "UserPoolDomainPrefix":"${UserPoolDomainPrefix}"
+        }'
         GitHubRepo: search-workspace-service
         GitHubBranch: main
         UseManualApproval: !Ref UseManualApproval
@@ -193,7 +238,7 @@ Resources:
   ApiGwAccountConfig:
     Type: "AWS::ApiGateway::Account"
     Properties:
-      CloudWatchRoleArn: !GetAtt "ApiGatewayLoggingRole.Arn"
+      CloudWatchRoleArn: !GetAtt ApiGatewayLoggingRole.Arn
   ApiGatewayLoggingRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -208,3 +253,11 @@ Resources:
       Path: "/"
       ManagedPolicyArns:
         - !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+  DomainName:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      CertificateArn: !Ref CertificateArn
+      DomainName: !Sub api.${CustomDomain}
+      EndpointConfiguration:
+        Types:
+          - EDGE
