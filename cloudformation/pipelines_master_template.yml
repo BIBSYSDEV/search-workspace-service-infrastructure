@@ -50,6 +50,9 @@ Parameters:
   CertificateArn:
     Type: String
     Description: ARN for the certificate covering the API host/domain/API Gateway Custom Domain. The value is stored in Region us-east-1.
+  BackupBucketName:
+   Type: String
+   Description: Name of the S3 bucket for olensearch buckups
 
 Resources:
   ApiDomainNameParameter:
@@ -86,7 +89,8 @@ Resources:
         {
           "CustomDomain":"${CustomDomain}",
           "ElasticSearchSize":"${ElasticSearchSize}", 
-          "UserPoolDomainPrefix":"${UserPoolDomainPrefix}"
+          "UserPoolDomainPrefix":"${UserPoolDomainPrefix}",
+          "BackupBucketName":"${BackupBucketName}"
         }'
         GitHubRepo: search-workspace-service
         GitHubBranch: main
