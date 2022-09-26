@@ -30,7 +30,8 @@ Take a snapshot of the opensearch-clusters and store it somewhere outside of the
 
 1. Go to _CloudFormation_ -> Stacks, and search for SwsPipeline. Delete the one which is NOT nested
 2. After this stack has been deleted (can take 20min), still in _CloudFormation_ search for and delete "sws-master-pipeline"
-3. Go to Route 53 and delete the CNAME records for api.<env>.sws.aws.sikt.no pointing to a cloudfront
+3. Go to Route 53 and locate the HostedZone with Domain name equal to `$Domain`. (e.g `dev.sws.aws.sikt.no`):
+   1. delete any CNAME records that contain the values `api.$Domain` (e.g., `api.dev.aws.sws.sikt.no`) pointing to a cloudfront-url.
 
 #### Manual configuration
 
@@ -40,23 +41,16 @@ This bucket is maintained **manually**, and you should pull the `master` branch 
 the contents of the folder "cloudformation" in `search-workspace-service-infrastucture` repository (as is) to the S3 bucket **manually**.
 2. **Certificates:**
 Assert that a certificate is in place in _Certificate Manager_ in Region **us-east-1** and it contains the aforementioned records (see [Assumptions](#Assumptions))
-3. **DNS (_Route53_):**
-   1. In _Route53_ ,locate the HostedZone with Domain name equal to `$Domain`. (e.g `dev.sws.aws.sikt.no`).
-   2. In the HostedZone, delete any CNAME records that contain the values `api.$Domain` (e.g., `api.dev.aws.sws.sikt.no`).
-   3. In the HostedZone, delete any CNAME records that contain the values `portal.$Domain` or any CNAME record is attached to a developer portal (Open API documentation page).
-   4. **ATTENTION:** Do not delete any CNAME records that have "Domain value" equal to `$Domain`.
-   5. **ATTENTION:** Do not delete any **non**-CNAME records
-   6. **ATTENTION:** The Hosted Zone for production is `sws.aws.sikt.no`.
-4. **Secrets:** Set-up the following secrets, if they are not in place:
+3. **Secrets:** Set-up the following secrets, if they are not in place:
    1. Githubtoken
                 Secret name: githubtoken
                 Secret key:   SecretString  
                 Secret value: `<githubtoken>`   
                 The values for the non-production environments are shared.   
-5. **Build Master stack:**
+4. **Build Master stack:**
    1. Create a new Master stack using the `pipelines_master_template.yml` from the s3 bucket created earlier.
    2. Fill in the details. The defaults are for dev-environments. 
-6. **Update DNS for Backend:** 
+5. **Update DNS for Backend:** 
    1. Go to _ApiGateway_ --> "Custom domain names" and select the created custom domain name (e.g. `api.sandbox.sws.aws.sikt.no`).
    2. Copy the value of the field `API Gateway domain name` (e.g. `d27gccxh1hqvcd.cloudfront.net`)
    3. Create a new CNAME Record in the associated Hosted Zone in _Route53_, e.g.:
