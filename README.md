@@ -58,3 +58,5 @@ Assert that a certificate is in place in _Certificate Manager_ in Region **us-ea
                     Record name: api.sandbox.sws.aws.sikt.no
                     Record type: CNAME
                     Value: d27gccxh1hqvcd.cloudfront.net
+6. Approve build
+   1. Go to Developer Tools > CodePipeline > Pipelines (eu-west-1) and approve deployment
