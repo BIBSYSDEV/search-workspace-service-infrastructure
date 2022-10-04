@@ -58,5 +58,9 @@ Assert that a certificate is in place in _Certificate Manager_ in Region **us-ea
                     Record name: api.sandbox.sws.aws.sikt.no
                     Record type: CNAME
                     Value: d27gccxh1hqvcd.cloudfront.net
-6. Approve build
+6. **Register Snapshot repository**
+   1. As the s3 bucket used for the snapshot repo is external out-of-stack resource it should be registered for the Opensearch domain after all resources are created.
+   2. Go to lambda functions: sws-master-pipeline-SwsPi-RegisterSnapshotRepoHand-… (in the code RegisterSnapshotRepoHandler.java)
+   3. Trigger function by clicking “Test” button manually. Make sure return codes are positive (200 returned by Opensearch and lambda)
+7. Approve build
    1. Go to Developer Tools > CodePipeline > Pipelines (eu-west-1) and approve deployment
