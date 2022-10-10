@@ -49,7 +49,7 @@ Assert that a certificate is in place in _Certificate Manager_ in Region **us-ea
                 The values for the non-production environments are shared.   
 4. **Build Master stack:**
    1. Create a new Master stack using the `pipelines_master_template.yml` from the s3 bucket created earlier.
-   2. Fill in the details. The defaults are for dev-environments. 
+   2. Fill in the details. The defaults are for dev-environments. The name: sws-master-pipeline
 5. **Update DNS for Backend:** 
    1. Go to _ApiGateway_ --> "Custom domain names" and select the created custom domain name (e.g. `api.sandbox.sws.aws.sikt.no`).
    2. Copy the value of the field `API Gateway domain name` (e.g. `d27gccxh1hqvcd.cloudfront.net`)
