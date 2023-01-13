@@ -190,6 +190,8 @@ Resources:
                   - es:DeleteElasticsearchDomain
                   - es:DescribeElasticsearchDomain
                   - es:UpdateElasticsearchDomainConfig
+                  - es:UpgradeDomain
+                  - es:UpgradeElasticsearchDomain
                   - es:ListTags
                   - s3:CreateBucket
                   - s3:PutLifecycleConfiguration
