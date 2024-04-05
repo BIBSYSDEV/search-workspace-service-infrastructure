@@ -193,6 +193,7 @@ Resources:
                   - es:UpgradeDomain
                   - es:UpgradeElasticsearchDomain
                   - es:ListTags
+                  - es:DescribeDomainChangeProgress
                   - s3:CreateBucket
                   - s3:PutLifecycleConfiguration
                   - s3:DeleteBucket
