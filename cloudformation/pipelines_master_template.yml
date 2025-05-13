@@ -77,6 +77,12 @@ Resources:
       Type: String
       Value: !GetAtt SwsDeployStackRole.Arn
 
+  GitHubConnection:
+    Type: "AWS::CodeStarConnections::Connection"
+    Properties:
+      ConnectionName: GitHubConnection
+      ProviderType: GitHub
+
   SwsPipeline:
     Type: AWS::CloudFormation::Stack
     DependsOn:
@@ -95,6 +101,7 @@ Resources:
         GitHubRepo: search-workspace-service
         GitHubBranch: main
         UseManualApproval: !Ref UseManualApproval
+        GitHubConnectionArn: !GetAtt GitHubConnection.ConnectionArn
         RequiresDocker: true
       TemplateURL: !Sub 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/continuous_build_pipeline.yml'
       TimeoutInMinutes: 60

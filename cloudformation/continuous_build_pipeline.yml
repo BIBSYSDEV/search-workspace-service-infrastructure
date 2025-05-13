@@ -41,7 +41,10 @@ Parameters:
     Default: false
   CodeBuildImage:
     Type: String
-    Default: aws/codebuild/standard:5.0
+    Default: aws/codebuild/standard:7.0
+  GitHubConnectionArn:
+    Description: GitHubConnection ARN
+    Type: String
   SwsDeployStackRoleArn:
     Type: AWS::SSM::Parameter::Value<String>
     Description: The Role ARN for deploying the stack
@@ -86,15 +89,13 @@ Resources:
             - Name: GitHubSource
               ActionTypeId:
                 Category: Source
-                Owner: ThirdParty
-                Provider: GitHub
+                Owner: AWS
+                Provider: CodeStarSourceConnection
                 Version: '1'
               Configuration:
-                Owner: !Ref GitHubOwner
-                OAuthToken: !Ref GitHubOAuthToken
-                Repo: !Ref GitHubRepo
-                Branch: !Ref GitHubBranch
-                PollForSourceChanges: true
+                ConnectionArn: !Ref GitHubConnectionArn
+                FullRepositoryId: !Sub '${GitHubOwner}/${GitHubRepo}'
+                BranchName: !Ref GitHubBranch
               OutputArtifacts:
                 - Name: !Sub '${GitHubRepo}-Source'
               RunOrder: 1
@@ -166,6 +167,10 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
+              - Action:
+                  - codestar-connections:UseConnection
+                Effect: Allow
+                Resource: '*'
               - Action:
                   - iam:PassRole
                 Effect: Allow
