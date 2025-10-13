@@ -149,7 +149,14 @@ Resources:
                   - cloudwatch:DeleteAlarms
                   - cloudwatch:DescribeAlarms
                   - cloudformation:CreateChangeSet
+                  - cloudformation:DescribeStackEvents
                   - cloudfront:UpdateDistribution
+                  - codebuild:CreateReportGroup
+                  - codebuild:UpdateReportGroup
+                  - codebuild:CreateReport
+                  - codebuild:UpdateReport
+                  - codebuild:BatchPutTestCases
+                  - codebuild:BatchPutCodeCoverages
                   - codedeploy:CreateApplication
                   - codedeploy:DeleteApplication
                   - codedeploy:CreateDeploymentGroup
@@ -184,6 +191,8 @@ Resources:
                   - logs:DeleteLogGroup
                   - logs:DescribeLogGroups
                   - logs:ListTagsLogGroup
+                  - logs:PutRetentionPolicy
+                  - logs:DeleteRetentionPolicy
                   - apigateway:GET
                   - apigateway:PUT
                   - apigateway:POST
