@@ -83,6 +83,7 @@ Resources:
         Location:
           Ref: ContinuousBuildArtifaceStoreBucket
       RoleArn: !GetAtt UpdateS3AndCFNRole.Arn
+      PipelineType: V2
       Stages:
         - Name: Source
           Actions:
@@ -141,7 +142,7 @@ Resources:
               InputArtifacts:
                 - Name: !Sub '${GitHubRepo}-Build'
               Configuration:
-                ActionMode: REPLACE_ON_FAILURE
+                ActionMode: CREATE_UPDATE
                 RoleArn: !Ref SwsDeployStackRoleArn
                 StackName: !Sub '${AWS::StackName}-${GitHubRepo}'
                 TemplatePath: !Sub '${GitHubRepo}-Build::packaged.yaml'
