@@ -193,6 +193,7 @@ Resources:
                   - logs:ListTagsLogGroup
                   - logs:PutRetentionPolicy
                   - logs:DeleteRetentionPolicy
+                  - logs:ListTagsForResource
                   - apigateway:GET
                   - apigateway:PUT
                   - apigateway:POST
