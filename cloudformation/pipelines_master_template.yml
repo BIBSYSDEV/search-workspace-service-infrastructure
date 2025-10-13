@@ -184,6 +184,8 @@ Resources:
                   - logs:DeleteLogGroup
                   - logs:DescribeLogGroups
                   - logs:ListTagsLogGroup
+                  - logs:DeleteRetentionPolicy
+                  - logs:ListTagsForResource
                   - apigateway:GET
                   - apigateway:PUT
                   - apigateway:POST
