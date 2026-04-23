@@ -7,14 +7,6 @@ Description: >
   Creates a CodePipeline for serverless applications that for the given GitHubBranch:
   pulls source from github, builds a application and deploys the distribution to
 
-#
-# Changes:
-# Version 1.1: Added dynamoDB actions to DeployLambdaRole
-#         1.2: Added logs:  actions
-#         1.4: Added dynamodb:DeleteTable to DeployLambdaRole
-#         1.5: Updated Linux image runtimes  to 5.0
-#
-
 Parameters:
   GitHubOwner:
     Description: GitHub username owning the repo
@@ -244,7 +236,6 @@ Resources:
                 Action:
                   - secretsmanager:GetSecretValue
                 Resource: '*'
-                  ##- !Sub 'arn:aws:secretsmanager:eu-west-1:${AWS::AccountId}:secret:DockerHubCredentials*'
 
   ContinuousBuildArtifaceStoreBucket:
     Type: AWS::S3::Bucket
