@@ -175,6 +175,7 @@ Resources:
                   - iam:PutRolePolicy
                   - iam:DeleteRolePolicy
                   - iam:GetRolePolicy
+                  - iam:ListAttachedRolePolicies
                   - iam:UpdateAssumeRolePolicy
                   - iam:CreateServiceLinkedRole
                   - dynamodb:DescribeTable
@@ -186,6 +187,7 @@ Resources:
                   - lambda:*
                   - logs:CreateLogGroup
                   - logs:DeleteLogGroup
+                  - logs:DescribeIndexPolicies
                   - logs:DescribeLogGroups
                   - logs:ListTagsLogGroup
                   - logs:PutRetentionPolicy
