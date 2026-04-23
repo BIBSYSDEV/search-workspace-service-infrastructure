@@ -141,7 +141,6 @@ Resources:
                   - application-autoscaling:RegisterScalableTarget
                   - application-autoscaling:DeregisterScalableTarget
                   - application-autoscaling:DescribeScalingPolicies
-                  - application-autoscaling:DescribeScalingPolicies
                   - application-autoscaling:PutScalingPolicy
                   - application-autoscaling:DeleteScalingPolicy
                   - cloudwatch:PutMetricAlarm
@@ -184,7 +183,6 @@ Resources:
                   - dynamodb:DescribeContinuousBackups
                   - dynamodb:UpdateContinuousBackups
                   - dynamodb:DeleteTable
-                  - events:PutRule
                   - lambda:*
                   - logs:CreateLogGroup
                   - logs:DeleteLogGroup
@@ -223,9 +221,6 @@ Resources:
                   - ses:DeleteEmailIdentity
                   - ses:PutEmailIdentityFeedbackAttributes
                   - ses:GetEmailIdentity
-                  - sqs:CreateQueue
-                  - sqs:GetQueueAttributes
-                  - sqs:DeleteQueue
                   - events:DeleteRule
                   - events:DescribeRule
                   - events:ListRules
