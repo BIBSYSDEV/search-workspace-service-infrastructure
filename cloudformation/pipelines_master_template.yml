@@ -52,7 +52,7 @@ Parameters:
     Description: ARN for the certificate covering the API host/domain/API Gateway Custom Domain. The value is stored in Region us-east-1.
   BackupBucketName:
    Type: String
-   Description: Name of the S3 bucket for olensearch buckups
+   Description: Name of the S3 bucket for OpenSearch backups
 
 Resources:
   ApiDomainNameParameter:
@@ -65,7 +65,7 @@ Resources:
   CustomDomainNameParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Description: The custom domain for the enviorment without service related prefix.
+      Description: The custom domain for the environment without service related prefix.
       Name: /SWS/CustomDomain
       Type: String
       Value: !Ref CustomDomain
