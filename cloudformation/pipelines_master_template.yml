@@ -52,7 +52,7 @@ Parameters:
     Description: ARN for the certificate covering the API host/domain/API Gateway Custom Domain. The value is stored in Region us-east-1.
   BackupBucketName:
    Type: String
-   Description: Name of the S3 bucket for olensearch buckups
+   Description: Name of the S3 bucket for OpenSearch backups
 
 Resources:
   ApiDomainNameParameter:
@@ -65,7 +65,7 @@ Resources:
   CustomDomainNameParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Description: The custom domain for the enviorment without service related prefix.
+      Description: The custom domain for the environment without service related prefix.
       Name: /SWS/CustomDomain
       Type: String
       Value: !Ref CustomDomain
@@ -141,10 +141,8 @@ Resources:
                   - application-autoscaling:RegisterScalableTarget
                   - application-autoscaling:DeregisterScalableTarget
                   - application-autoscaling:DescribeScalingPolicies
-                  - application-autoscaling:DescribeScalingPolicies
                   - application-autoscaling:PutScalingPolicy
                   - application-autoscaling:DeleteScalingPolicy
-                  - autoscaling:DeleteScalingPolicy
                   - cloudwatch:PutMetricAlarm
                   - cloudwatch:DeleteAlarms
                   - cloudwatch:DescribeAlarms
@@ -177,6 +175,7 @@ Resources:
                   - iam:PutRolePolicy
                   - iam:DeleteRolePolicy
                   - iam:GetRolePolicy
+                  - iam:ListAttachedRolePolicies
                   - iam:UpdateAssumeRolePolicy
                   - iam:CreateServiceLinkedRole
                   - dynamodb:DescribeTable
@@ -185,10 +184,10 @@ Resources:
                   - dynamodb:DescribeContinuousBackups
                   - dynamodb:UpdateContinuousBackups
                   - dynamodb:DeleteTable
-                  - events:PutRule
                   - lambda:*
                   - logs:CreateLogGroup
                   - logs:DeleteLogGroup
+                  - logs:DescribeIndexPolicies
                   - logs:DescribeLogGroups
                   - logs:ListTagsLogGroup
                   - logs:PutRetentionPolicy
@@ -224,9 +223,6 @@ Resources:
                   - ses:DeleteEmailIdentity
                   - ses:PutEmailIdentityFeedbackAttributes
                   - ses:GetEmailIdentity
-                  - sqs:CreateQueue
-                  - sqs:GetQueueAttributes
-                  - sqs:DeleteQueue
                   - events:DeleteRule
                   - events:DescribeRule
                   - events:ListRules
@@ -251,7 +247,6 @@ Resources:
                 Effect: Allow
                 Resource: "*"
               - Action:
-                  - ssm:GetSecretValue
                   - ssm:GetParameters
                 Effect: Allow
                 Resource: '*'

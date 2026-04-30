@@ -7,20 +7,7 @@ Description: >
   Creates a CodePipeline for serverless applications that for the given GitHubBranch:
   pulls source from github, builds a application and deploys the distribution to
 
-#
-# Changes:
-# Version 1.1: Added dynamoDB actions to DeployLambdaRole
-#         1.2: Added logs:  actions
-#         1.4: Added dynamodb:DeleteTable to DeployLambdaRole
-#         1.5: Updated Linux image runtimes  to 5.0
-#
-
 Parameters:
-  GitHubOAuthToken:
-    Description: OAuth token used by AWS CodePipeline to connect to GitHub
-    NoEcho: true
-    Type: String
-    Default: '{{resolve:secretsmanager:githubtoken:SecretString}}'
   GitHubOwner:
     Description: GitHub username owning the repo
     Type: String
@@ -199,7 +186,6 @@ Resources:
                 Effect: Allow
                 Resource: '*'
               - Action:
-                  - ssm:GetSecretValue
                   - ssm:GetParameters
                 Effect: Allow
                 Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/*'
@@ -250,7 +236,6 @@ Resources:
                 Action:
                   - secretsmanager:GetSecretValue
                 Resource: '*'
-                  ##- !Sub 'arn:aws:secretsmanager:eu-west-1:${AWS::AccountId}:secret:DockerHubCredentials*'
 
   ContinuousBuildArtifaceStoreBucket:
     Type: AWS::S3::Bucket
