@@ -31,6 +31,10 @@ Parameters:
     Type: String
     Description: The prefix for the Cognito domain. Must be globaly unique
     Default: sws-auth-dev
+  DashboardApplicationName:
+    Type: String
+    Description: Name of the OpenSearch UI dashboard application. Must be unique per account and region.
+    Default: sws-dev-dashboard
   ApiDomain:
     Type: String
     Description: The domain of the SWS Backend related services. This part of the domain is common to both backend and frontend services. Eg. api.dev.sws.aws.sikt.no or api.sws.aws.sikt.no.
@@ -96,7 +100,8 @@ Resources:
           "CustomDomain":"${CustomDomain}",
           "ElasticSearchSize":"${ElasticSearchSize}", 
           "UserPoolDomainPrefix":"${UserPoolDomainPrefix}",
-          "BackupBucketName":"${BackupBucketName}"
+          "BackupBucketName":"${BackupBucketName}",
+          "DashboardApplicationName":"${DashboardApplicationName}"
         }'
         GitHubRepo: search-workspace-service
         GitHubBranch: main
@@ -210,6 +215,12 @@ Resources:
                   - es:UpgradeElasticsearchDomain
                   - es:ListTags
                   - es:DescribeDomainChangeProgress
+                  - es:CreateApplication
+                  - es:GetApplication
+                  - es:UpdateApplication
+                  - es:DeleteApplication
+                  - es:AddTags
+                  - es:RemoveTags
                   - s3:CreateBucket
                   - s3:PutLifecycleConfiguration
                   - s3:DeleteBucket
