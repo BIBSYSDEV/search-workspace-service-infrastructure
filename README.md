@@ -47,10 +47,16 @@ Assert that a certificate is in place in _Certificate Manager_ in Region **us-ea
                 Secret key:   SecretString  
                 Secret value: `<githubtoken>`   
                 The values for the non-production environments are shared.   
-4. **Build Master stack:**
+4. **Slack alerting (AWS Chatbot):**
+   1. Go to _AWS Chatbot_ and authorize the Slack workspace, if it is not already authorized.
+      This is a prerequisite for the `SlackChannelConfiguration` resource in the master stack.
+   2. Decide on the Slack channel for alerts and invite the AWS bot to it.
+   3. Note the Slack workspace ID (e.g. TXXXXXXXX) and channel ID (e.g. CXXXXXXXXXX).
+      These are the `SlackWorkspaceId` and `SlackChannelId` parameters of the master stack.
+5. **Build Master stack:**
    1. Create a new Master stack using the `pipelines_master_template.yml` from the s3 bucket created earlier.
    2. Fill in the details. The defaults are for dev-environments. The name: sws-master-pipeline
-5. **Update DNS for Backend:** 
+6. **Update DNS for Backend:** 
    1. Go to _ApiGateway_ --> "Custom domain names" and select the created custom domain name (e.g. `api.sandbox.sws.aws.sikt.no`).
    2. Copy the value of the field `API Gateway domain name` (e.g. `d27gccxh1hqvcd.cloudfront.net`)
    3. Create a new CNAME Record in the associated Hosted Zone in _Route53_, e.g.:
@@ -58,9 +64,9 @@ Assert that a certificate is in place in _Certificate Manager_ in Region **us-ea
                     Record name: api.sandbox.sws.aws.sikt.no
                     Record type: CNAME
                     Value: d27gccxh1hqvcd.cloudfront.net
-6. **Register Snapshot repository**
+7. **Register Snapshot repository**
    1. As the s3 bucket used for the snapshot repo is external out-of-stack resource it should be registered for the Opensearch domain after all resources are created.
    2. Go to lambda functions: sws-master-pipeline-SwsPi-RegisterSnapshotRepoHand-… (in the code RegisterSnapshotRepoHandler.java)
    3. Trigger function by clicking “Test” button manually. Make sure return codes are positive (200 returned by Opensearch and lambda)
-7. Approve build
+8. Approve build
    1. Go to Developer Tools > CodePipeline > Pipelines (eu-west-1) and approve deployment

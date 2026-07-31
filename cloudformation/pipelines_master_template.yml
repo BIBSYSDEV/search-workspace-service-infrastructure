@@ -57,6 +57,12 @@ Parameters:
   BackupBucketName:
    Type: String
    Description: Name of the S3 bucket for OpenSearch backups
+  SlackChannelId:
+    Type: String
+    Description: ID of slack channel. Used for monitoring/alerts. Example CXXXXXXXXXX
+  SlackWorkspaceId:
+    Type: String
+    Description: ID of slack workspace. Used for monitoring/alerts. Example TXXXXXXXX
 
 Resources:
   ApiDomainNameParameter:
@@ -291,3 +297,60 @@ Resources:
       EndpointConfiguration:
         Types:
           - EDGE
+
+  SlackSNSTopic:
+    Type: AWS::SNS::Topic
+
+  SlackSNSTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref SlackSNSTopic
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudWatchAlarmsPublish
+            Effect: Allow
+            Principal:
+              Service: cloudwatch.amazonaws.com
+            Action:
+              - SNS:Publish
+            Resource: !Ref SlackSNSTopic
+
+  ChatbotRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "chatbot.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/AmazonSNSReadOnlyAccess"
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/AWSSupportAccess"
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/CloudWatchReadOnlyAccess"
+
+  SwsSlackChannel:
+    Type: AWS::Chatbot::SlackChannelConfiguration
+    Properties:
+      ConfigurationName: sws-monitoring
+      IamRoleArn: !GetAtt ChatbotRole.Arn
+      LoggingLevel: INFO
+      SlackChannelId: !Ref SlackChannelId
+      SlackWorkspaceId: !Ref SlackWorkspaceId
+      SnsTopicArns:
+        - !Ref SlackSNSTopic
+
+  SlackSnsArnParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: |-
+        Common Amazon Simple Notification Service topic ARN for posting service notifications from the SWS stacks. Referenced with \{\{resolve:ssm:/NVA/Monitoring/SlackSnsArn\}\} in other templates
+      Name: /NVA/Monitoring/SlackSnsArn
+      Type: String
+      Value: !Ref SlackSNSTopic
